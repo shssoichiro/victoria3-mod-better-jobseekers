@@ -1,0 +1,179 @@
+@entry_width = 350
+@entry_height = 30
+
+types pinnable_outliner_items {
+	type state_item = pinnable_outliner_entry {
+		datacontext = "[OutlinerEntry.AccessScope.AccessState]"
+
+		blockoverride "text" {
+			margin_left = 3
+			text = "[State.GetNameNoFormatting]"
+		}
+
+		blockoverride "outliner_item_tooltip" {
+			tooltipwidget = {
+				FancyTooltip_State = {}
+			}
+		}
+
+		blockoverride "onrightclick" {
+			onrightclick = "[RightClickMenuManager.ShowForState(State.AccessSelf)]"
+		}
+
+		blockoverride "onhover" {
+			onmousehierarchyenter = "[AccessHighlightManager.HighlightState(State.Self)]"
+			onmousehierarchyleave = "[AccessHighlightManager.RemoveHighlight]"
+		}
+
+		blockoverride "additional_info" {
+			spacing = 5
+
+			textbox = {
+				visible = "[Not(State.IsGrowingColony)]"
+				size = { 40 25 }
+				align = left|nobaseline
+				text = "[State.CalcTaxCapacityBalance|0+=]"
+				parentanchor = vcenter
+				elide = right
+				fontsize_min = 12
+				tooltip = "STATE_TAX_CAPACITY_DESC"
+			}
+
+			textbox = {
+				visible = "[Not(State.IsGrowingColony)]"
+				size = { 35 25 }
+				align = left|nobaseline
+				text = "[State.GetInfrastructureBalance|0+=]"
+				parentanchor = vcenter
+				elide = right
+				fontsize_min = 12
+				tooltip = "STATE_INFRASTRUCTURE_DESC"
+			}
+
+			flowcontainer = {
+				visible = "[State.IsGrowingColony]"
+				parentanchor = vcenter
+				margin_left = 3
+				spacing = 5
+
+				tiny_flag = {
+					datacontext = "[State.GetNextColonyProvince.GetState.GetOwner]"
+					parentanchor = vcenter
+				}
+
+				textbox = {
+					parentanchor = vcenter
+					align = left|nobaseline
+					autoresize = yes
+					minimumsize = { 84 -1 }
+					maximumsize = { 84 -1 }
+					raw_text = "[GetPlayer.GetTensionWithDesc( State.GetNextColonyProvince.GetState.GetOwner)]"
+					tooltip = "[GetPlayer.GetTensionTooltip( State.GetNextColonyProvince.GetState.GetOwner )]"
+					fontsize_min = 12
+					elide = right
+				}	
+
+				container = {
+					parentanchor = vcenter
+					tooltip = "STATE_COLONY_TOOLTIP"
+
+					changed_value_increased_progressbar_horizontal = {
+						visible = "[And( Not(State.IsColonyProgressBlockedByInactiveInterest), GreaterThan_int32( State.GetColonyProgressAsDays, '(int32)-1'))]"
+						
+						parentanchor = vcenter
+						size = { 30 12 }
+
+						blockoverride "values" {
+							value = "[State.GetColonyProgressAsFloat]"
+							min = 0
+							max = 1
+						}
+
+						blockoverride "arrow_texture_density" {
+							texture_density = 13 #use to match height of progressbar
+						}
+					}
+
+					default_progressbar_horizontal = {
+						visible = "[Or(State.IsColonyProgressBlockedByInactiveInterest, Not(GreaterThan_int32( State.GetColonyProgressAsDays, '(int32)-1')))]"
+						
+						parentanchor = vcenter
+						size = { 30 12 }
+
+						blockoverride "values" {
+							value = "[State.GetColonyProgressAsFloat]"
+							min = 0
+							max = 1
+						}
+					}
+
+					textbox = {
+						visible = "[Or(State.IsColonyProgressBlockedByInactiveInterest, Not(GreaterThan_int32( State.GetColonyProgressAsDays, '(int32)-1')))]"
+						raw_text = "@warning!"
+						autoresize = yes
+						parentanchor = center
+						align = nobaseline
+						default_format = "#v"
+						using = fontsize_small
+					}
+				}
+			}
+
+			widget = {
+				size = { 70 25 }
+				visible = "[Not(State.IsGrowingColony)]"
+				parentanchor = vcenter
+				tooltip = "STATE_AVAILABLE_LABOR_TOOLTIP"
+
+				### MODIFIED: SETTING - JOBSEEKERS
+				textbox = {
+					raw_text = "#v [Add_int64( State.GetNumUnemployedWorkingAdults, State.GetNumSubsistenceWorkingAdults )|D]#! [SelectLocalization(State.HasInsufficientQualificationsForAvailablePositions, '@red_cross!', '@green_checkmark!')]"
+					size = { 100% 100% }
+					align = right|nobaseline
+					parentanchor = vcenter
+					elide = right
+					fontsize_min = 12
+					visible = "[Not(GetVariableSystem.HasValue('hide_jobseekers', 'true'))]"
+				}
+
+				### SETTING - PEASANTS
+				textbox = {
+					text = "[State.GetNumSubsistenceWorkingAdults|Dv] [SelectLocalization(State.HasInsufficientQualificationsForAvailablePositions, '@red_cross!', '@green_checkmark!')]"
+					size = { 100% 100% }
+					align = right|nobaseline
+					parentanchor = vcenter
+					elide = right
+					fontsize_min = 12
+					visible = "[GetVariableSystem.HasValue('show_peasants', 'true')]"
+				}
+
+				### SETTING - UNEMPLOYED
+				textbox = {
+					raw_text = "#variable [State.GetNumUnemployedWorkingAdults|D]#! [SelectLocalization(State.HasInsufficientQualificationsForAvailablePositions, '@red_cross!', '@green_checkmark!')]"
+					size = { 100% 100% }
+					align = right|nobaseline
+					parentanchor = vcenter
+					elide = right
+					fontsize_min = 12
+					visible = "[GetVariableSystem.HasValue('show_unemployed', 'true')]"
+				}
+			}
+
+			textbox = {
+				text = "[State.GetPopulationSize|Dv]"
+				tooltip = "TOOLTIP_STATE_POPULATION"
+
+				align = right|nobaseline
+				autoresize = yes
+				minimumsize = { 55 -1 }
+				maximumsize = { 55 -1 }
+				fontsize_min = 12
+				margin_left = 5
+			}
+		}
+
+		blockoverride "onclick" {
+			onclick = "[InformationPanelBar.OpenStatePanel( State.AccessSelf )]"
+		}
+	}
+}
