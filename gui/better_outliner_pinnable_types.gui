@@ -1,4 +1,4 @@
-@entry_width = 350
+﻿@entry_width = 350
 @entry_height = 30
 
 types pinnable_outliner_items {
