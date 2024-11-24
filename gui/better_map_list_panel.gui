@@ -43,16 +43,7 @@ types map_list_panel_types {
 				spacing = 5
 
 				textbox = {
-					visible = "[Not(State.GetOwner.IsLocalPlayer)]"
-					text = "[State.GetOwner.GetFlagTextIcon]"
-
-					autoresize = yes
-					align = nobaseline
-					layoutpolicy_vertical = expanding					
-				}
-
-				textbox = {
-					text = "[State.GetNameNoFormatting]"
+					text = "STATE_NAME_WITH_FOREIGN_FLAG_NO_FORMAT"
 
 					layoutpolicy_horizontal = expanding
 					align = nobaseline
@@ -81,7 +72,7 @@ types map_list_panel_types {
 				parentanchor = vcenter
 				elide = right
 				using = tooltip_above
-				alpha = "[TransparentIfFalse( Or( GreaterThan_int32(Building.GetExpansionLevel, '(int32)0'), Building.HasConstructionQueued ))]"
+				using = building_size_choose_alpha
 				fontsize_min = 12
 			}
 
